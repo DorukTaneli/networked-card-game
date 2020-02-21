@@ -20,22 +20,28 @@ public class MongoDB {
 	MongoCollection<Document> collection;
 	
 	public MongoDB() {
+		super();
 	      // Creating a Mongo client 
 	      mongo = new MongoClient( "localhost" , 27017 ); 
-	   
+	     
 	      // Creating Credentials 
 	      credential = MongoCredential.createCredential("sampleUser", "myDb", 
 	         "password".toCharArray()); 
 	      
 	      // Accessing the database 
-	      database = mongo.getDatabase("myDb"); 
-	      System.out.println("Credentials ::"+ credential); 
+	      MongoDatabase database = mongo.getDatabase("myDb");  
 	      
-	      //Create collection
-	      database.createCollection("sampleCollection");
-	      
-	      //Get collection
+	      // Retrieving a collection
 	      collection = database.getCollection("myCollection"); 
+	 
+	}
+	
+	public void initiateDatabase() {
+		createCollection();
+	}
+	
+	public void createCollection() {
+	      database.createCollection("Collection1");
 	}
 	
 	public void insert(String P1, String P2, int round, int cardsRemaining, int scoreP1, int scoreP2) {
