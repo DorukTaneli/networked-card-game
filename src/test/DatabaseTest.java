@@ -10,8 +10,9 @@ public class DatabaseTest {
 		
 		//db.insert("Mike", "George", 5, 21, 10, 15);
 		
-		System.out.println(db.getPlayer1Name());
-		
+		//System.out.println(db.getPlayer1Name());
+		String s = db.syncDB(7, 19, 20, 25);
+		System.out.println(s);
 		db.printDatabaseContents();
 	}
 
