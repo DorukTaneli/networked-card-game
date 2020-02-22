@@ -8,7 +8,10 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.MongoClient; 
 import com.mongodb.MongoCredential;
 
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.Iterator;
+import java.util.Locale;
 
 import org.bson.Document; 
 
@@ -36,6 +39,7 @@ public class MongoDB {
 	 
 	}
 	
+	//call this only the first time you use the database
 	public void initiateDatabase() {
 		createCollection();
 	}
@@ -44,6 +48,7 @@ public class MongoDB {
 	      database.createCollection("Collection1");
 	}
 	
+	//call this at the start of every game
 	public void insert(String P1, String P2, int round, int cardsRemaining, int scoreP1, int scoreP2) {
 		Document document = new Document("id", 1)
 				  .append("Player1", P1)
@@ -80,6 +85,32 @@ public class MongoDB {
 	    }
 	}
 	
+	public MongoCredential getCredential() {
+		return credential;
+	}
 	
+	//Call this function every 30 seconds
+	public String syncDB(int round, int cardsRemaining, int scoreP1, int scoreP2) {
+		LocalDateTime now = LocalDateTime.now();
+		String time = new SimpleDateFormat("HH:mm:ss", Locale.ENGLISH).format(now);
+		String str = "Current time: " + time;
+		
+		boolean sync = false;		
+		FindIterable<Document> findIterable = collection.find(Filters.eq("id", 1));
+		Document doc = findIterable.iterator().next();
+		
+		if ((int)doc.get("round") != round)
+			sync = true;
+		
+		if (sync) {
+			str.concat("Database will be synchronized");
+			update(round, cardsRemaining, scoreP1, scoreP2);
+			str.concat("\nSynchronization done with MongoDB");
+		} else {
+			str.concat(", no update is needed. Already synced!");
+		}
+
+		return str;
+	}
 	
 }
