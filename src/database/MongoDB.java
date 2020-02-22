@@ -10,6 +10,7 @@ import com.mongodb.MongoCredential;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Locale;
 
@@ -54,18 +55,18 @@ public class MongoDB {
 				  .append("Player1", P1)
 			      .append("Player2", P2)
 			      .append("round", round) 
-			      .append("Remaining Cards", cardsRemaining) 
-			      .append("Player1 Score", scoreP1) 
-			      .append("Player2 Score", scoreP2);
+			      .append("RemainingCards", cardsRemaining) 
+			      .append("Player1Score", scoreP1) 
+			      .append("Player2Score", scoreP2);
 		collection.insertOne(document);
 	}
 	
 	public void update(int round, int cardsRemaining, int scoreP1, int scoreP2) {
 		collection.updateOne(Filters.eq("id", 1), 
 				Updates.combine(Updates.set("round", round),
-								Updates.set("Remaining Cards", cardsRemaining),
-								Updates.set("Player1 Score", scoreP1),
-								Updates.set("Player2 Score", scoreP2)));
+								Updates.set("RemainingCards", cardsRemaining),
+								Updates.set("Player1Score", scoreP1),
+								Updates.set("Player2Score", scoreP2)));
 	}
 
 	public void delete() {
@@ -91,23 +92,19 @@ public class MongoDB {
 	
 	//Call this function every 30 seconds
 	public String syncDB(int round, int cardsRemaining, int scoreP1, int scoreP2) {
-		LocalDateTime now = LocalDateTime.now();
-		String time = new SimpleDateFormat("HH:mm:ss", Locale.ENGLISH).format(now);
+		Date now = new Date();
+		String time = new SimpleDateFormat("HH:mm:ss").format(now);
 		String str = "Current time: " + time;
-		
-		boolean sync = false;		
+			
 		FindIterable<Document> findIterable = collection.find(Filters.eq("id", 1));
 		Document doc = findIterable.iterator().next();
-		
-		if ((int)doc.get("round") != round)
-			sync = true;
-		
-		if (sync) {
-			str.concat("Database will be synchronized");
+				
+		if ((int)doc.get("round") != round) {		
+			str = str.concat(", Database will be synchronized");
 			update(round, cardsRemaining, scoreP1, scoreP2);
-			str.concat("\nSynchronization done with MongoDB");
+			str = str.concat("\nSynchronization done with MongoDB");
 		} else {
-			str.concat(", no update is needed. Already synced!");
+			str = str.concat(", no update is needed. Already synced!");
 		}
 
 		return str;
