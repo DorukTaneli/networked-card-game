@@ -9,7 +9,7 @@ import java.net.Socket;
 public class MasterServer
 {
     private ServerSocket serverSocket;
-    public static final int DEFAULT_SERVER_PORT = 4444;
+    public static final int DEFAULT_SERVER_PORT = 4446;
     /**
      * Initiates a server socket on the input port, listens to the line, on receiving an incoming
      * connection creates and starts a ServerThread on the client
@@ -21,16 +21,17 @@ public class MasterServer
         {
             serverSocket = new ServerSocket(port);
             System.out.println("Oppened up a server socket on " + Inet4Address.getLocalHost());
+            while (true)
+            {
+                ListenAndAccept();
+            }
         }
         catch (IOException e)
         {
             e.printStackTrace();
             System.err.println("Server class.Constructor exception on oppening a server socket");
         }
-        while (true)
-        {
-            ListenAndAccept();
-        }
+       
     }
 
     /**

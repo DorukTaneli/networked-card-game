@@ -9,7 +9,7 @@ import java.net.Socket;
 public class ConnectionToServer
 {
     public static final String DEFAULT_SERVER_ADDRESS = "localhost";
-    public static final int DEFAULT_SERVER_PORT = 4444;
+    public static final int DEFAULT_SERVER_PORT = 4446;
     private Socket s;
     //private BufferedReader br;
     protected BufferedReader is;
