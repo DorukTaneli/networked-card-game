@@ -1,9 +1,11 @@
 package game;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 import gameModel.Deck;
@@ -39,6 +41,30 @@ public class MasterServer
         }
        
     }
+    
+    public static void main(String[] args){
+    	   System.out.println("Start");
+    	   
+    	           while(true)
+    	          {
+    	               try
+    	           {
+    	            FTP_Server ftpServer = new FTP_Server();
+					ftpServer.start();
+    	            }
+    	            catch(NullPointerException e){} catch (UnknownHostException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (FileNotFoundException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+    	        }
+    	 }
+
 
     /**
      * Listens to the line and starts a connection on receiving a request from the client
