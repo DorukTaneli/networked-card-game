@@ -15,6 +15,11 @@ import java.util.Iterator;
 
 import org.bson.Document; 
 
+/**
+ * @author DorukTaneli
+ *
+ *	Class for interaction with MongoDB Database from the rest of the program.
+ */
 public class MongoDB {
 
 	MongoClient mongo;
@@ -43,12 +48,32 @@ public class MongoDB {
 	      collection = database.getCollection("myCollection"); 
 	 
 	}
-		
-	public void dropCollection() {
+	
+	public MongoCredential getCredential() {
+		return credential;
+	}
+	
+    /**
+     * Drops the collection. Only for development purposes, do not call from the rest of the program.
+     */
+	@SuppressWarnings("unused")
+	private void dropCollection() {
 		collection.drop();
 	}
 	
-	//call this at the start of every game
+
+	/**
+	 * Insert the game info to the database. Only use this function when you first start the game.
+	 * See syncDB function to synchronize the database contents with current game info as the game continues.
+	 * 
+	 * @param gameID id of the game, typically 1, increase as there are more games being played concurrently
+	 * @param P1 name of player1 as string
+	 * @param P2 name of player2 as string
+	 * @param round which round of the game
+	 * @param cardsRemaining remaining number of cards in each player's hands
+	 * @param scoreP1 score of player1 as int
+	 * @param scoreP2 score of player2 as int
+	 */
 	public void insert(int gameID, String P1, String P2, int round, int cardsRemaining, int scoreP1, int scoreP2) {
 		Document document = new Document("gameID", 1)
 				  .append("Player1", P1)
@@ -60,7 +85,17 @@ public class MongoDB {
 		collection.insertOne(document);
 	}
 	
-	public void update(int gameID, int round, int cardsRemaining, int scoreP1, int scoreP2) {
+	/**
+	 * Private function that updates the information of the game with given gameID.
+	 * To be used by syncDB.
+	 * 
+	 * @param gameID id of the game
+	 * @param round which round of the game
+	 * @param cardsRemaining remaining number of cards in each player's hands
+	 * @param scoreP1 score of player1 as int
+	 * @param scoreP2 score of player2 as int
+	 */
+	private void update(int gameID, int round, int cardsRemaining, int scoreP1, int scoreP2) {
 		collection.updateOne(Filters.eq("gameID", gameID), 
 				Updates.combine(Updates.set("round", round),
 								Updates.set("RemainingCards", cardsRemaining),
@@ -68,20 +103,41 @@ public class MongoDB {
 								Updates.set("Player2Score", scoreP2)));
 	}
 
+	/**
+	 * Deletes the information in the database associated with the given gameID.
+	 * 
+	 * @param gameID id of the game
+	 */
 	public void delete(int gameID) {
 		collection.deleteOne(Filters.eq("gameID", gameID));
 	}
 	
+	/**
+	 * Clears all contents of the database
+	 */
 	public void deleteAll() {
 		BasicDBObject document = new BasicDBObject();
 		collection.deleteMany(document);
 	}
-		
-	public String getPlayer1Name(int gameID) {
+	
+	
+	/**
+	 * returns the name of Player1 as a string in the game with given gameID.
+	 * 
+	 * Outdated way to get name of player, see getGameInfo function for the new way.
+	 * 
+	 * @param gameID gameID of the game you want to get player1Name from
+	 * @return string of player1Name
+	 */
+	@SuppressWarnings("unused")
+	private String getPlayer1Name(int gameID) {
 		FindIterable<Document> findIterable = collection.find(Filters.eq("gameID", gameID));
 		return (String)findIterable.iterator().next().get("Player1");
 	}
 	
+	/**
+	 * Prints the contents of the database, including internal id of the contents.
+	 */
 	public void printDatabaseContents() {
 		FindIterable<Document> iterDoc = collection.find();
 		Iterator<Document> it = iterDoc.iterator(); 
@@ -90,16 +146,30 @@ public class MongoDB {
 	    }
 	}
 	
+	/**
+	 * Returns information of the game as Document.
+	 * Use .get("field") to get individual fields.
+	 * 
+	 * @param gameID id of the game
+	 * @return game info as Document
+	 */
 	public Document getGameInfo(int gameID) {
 		FindIterable<Document> findIterable = collection.find(Filters.eq("gameID", gameID));
 		return findIterable.iterator().next();
 	}
 	
-	public MongoCredential getCredential() {
-		return credential;
-	}
-	
 	//Call this function every 30 seconds
+	/**
+	 * Call this function every 30 seconds or when the game state changes.
+	 * Updates database according to given parameters and returns string with the details of synchronization.
+	 * 
+	 * @param gameID id of the game
+	 * @param round which round of the game
+	 * @param cardsRemaining remaining number of cards in each player's hands
+	 * @param scoreP1 score of player1 as int
+	 * @param scoreP2 score of player2 as int
+	 * @return string with details of synchronization
+	 */
 	public String syncDB(int gameID, int round, int cardsRemaining, int scoreP1, int scoreP2) {
 		Date now = new Date();
 		String time = new SimpleDateFormat("HH:mm:ss").format(now);
