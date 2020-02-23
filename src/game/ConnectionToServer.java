@@ -71,7 +71,7 @@ public class ConnectionToServer
         	/*
             Sends the message to the server via PrintWriter
              */
-            dataOut.write(message);
+            dataOut.println(message);
             dataOut.flush();
         	/*
             Reads a line from the server via Buffer Reader
@@ -91,9 +91,20 @@ public class ConnectionToServer
             }
             if(message == 2)
             {
-            	dataOut.write(Integer.toString(myDeck.drawCard()));
+            	int card = myDeck.drawCard();
+            	dataOut.println(Integer.toString(card));
             	dataOut.flush();
-            	
+            	System.out.println("Your card: " + card);
+            	messageRecieved = dataIn.readLine();
+            	if(messageRecieved.equals("0")){
+            		System.out.println("You win the round");
+            	}
+            	else if(messageRecieved.equals("1")){
+            		System.out.println("It's a tie");
+            	}
+            	else if(messageRecieved.equals("2")){
+            		System.out.println("You lose the round");
+            	}
             }
             
             

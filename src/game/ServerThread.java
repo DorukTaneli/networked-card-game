@@ -20,6 +20,7 @@ class ServerThread extends Thread
     private String line = new String();
     private int clientCount;
     private Deck halfDeck = new Deck();
+    
 
     /**
      * Creates a server thread on the input socket
@@ -64,10 +65,14 @@ class ServerThread extends Thread
                 	{
                 		deck += String.format(",%s", halfDeck.deck.get(i));
                 	}
-                	dataOut.write(deck);;
+                	dataOut.println(deck);;
                 	dataOut.flush();
+                	System.out.println("Client " + s.getRemoteSocketAddress() + " got their deck");
                 }
-                System.out.println("Client " + s.getRemoteSocketAddress() + " got their deck");
+                else{
+                	int card = Integer.parseInt(line);
+                }
+               
                 line = is.readLine();
             }
         }
