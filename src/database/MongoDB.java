@@ -5,14 +5,13 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient; 
 import com.mongodb.MongoCredential;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.Locale;
 
 import org.bson.Document; 
 
@@ -50,8 +49,8 @@ public class MongoDB {
 	}
 	
 	//call this at the start of every game
-	public void insert(String P1, String P2, int round, int cardsRemaining, int scoreP1, int scoreP2) {
-		Document document = new Document("id", 1)
+	public void insert(int gameID, String P1, String P2, int round, int cardsRemaining, int scoreP1, int scoreP2) {
+		Document document = new Document("gameID", 1)
 				  .append("Player1", P1)
 			      .append("Player2", P2)
 			      .append("round", round) 
@@ -61,20 +60,25 @@ public class MongoDB {
 		collection.insertOne(document);
 	}
 	
-	public void update(int round, int cardsRemaining, int scoreP1, int scoreP2) {
-		collection.updateOne(Filters.eq("id", 1), 
+	public void update(int gameID, int round, int cardsRemaining, int scoreP1, int scoreP2) {
+		collection.updateOne(Filters.eq("gameID", gameID), 
 				Updates.combine(Updates.set("round", round),
 								Updates.set("RemainingCards", cardsRemaining),
 								Updates.set("Player1Score", scoreP1),
 								Updates.set("Player2Score", scoreP2)));
 	}
 
-	public void delete() {
-		collection.deleteOne(Filters.eq("id", 1));
+	public void delete(int gameID) {
+		collection.deleteOne(Filters.eq("gameID", gameID));
+	}
+	
+	public void deleteAll() {
+		BasicDBObject document = new BasicDBObject();
+		collection.deleteMany(document);
 	}
 		
-	public String getPlayer1Name() {
-		FindIterable<Document> findIterable = collection.find(Filters.eq("id", 1));
+	public String getPlayer1Name(int gameID) {
+		FindIterable<Document> findIterable = collection.find(Filters.eq("gameID", gameID));
 		return (String)findIterable.iterator().next().get("Player1");
 	}
 	
@@ -86,22 +90,27 @@ public class MongoDB {
 	    }
 	}
 	
+	public Document getGameInfo(int gameID) {
+		FindIterable<Document> findIterable = collection.find(Filters.eq("gameID", gameID));
+		return findIterable.iterator().next();
+	}
+	
 	public MongoCredential getCredential() {
 		return credential;
 	}
 	
 	//Call this function every 30 seconds
-	public String syncDB(int round, int cardsRemaining, int scoreP1, int scoreP2) {
+	public String syncDB(int gameID, int round, int cardsRemaining, int scoreP1, int scoreP2) {
 		Date now = new Date();
 		String time = new SimpleDateFormat("HH:mm:ss").format(now);
 		String str = "Current time: " + time;
 			
-		FindIterable<Document> findIterable = collection.find(Filters.eq("id", 1));
+		FindIterable<Document> findIterable = collection.find(Filters.eq("gameID", gameID));
 		Document doc = findIterable.iterator().next();
 				
 		if ((int)doc.get("round") != round) {		
-			str = str.concat(", Database will be synchronized");
-			update(round, cardsRemaining, scoreP1, scoreP2);
+			str = str.concat(", Database will be synchronized for game " + gameID);
+			update(gameID, round, cardsRemaining, scoreP1, scoreP2);
 			str = str.concat("\nSynchronization done with MongoDB");
 		} else {
 			str = str.concat(", no update is needed. Already synced!");
