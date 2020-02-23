@@ -158,7 +158,7 @@ public class MongoDB {
 		return findIterable.iterator().next();
 	}
 	
-	//Call this function every 30 seconds
+	
 	/**
 	 * Call this function every 30 seconds or when the game state changes.
 	 * Updates database according to given parameters and returns string with the details of synchronization.
