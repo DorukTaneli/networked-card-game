@@ -12,12 +12,14 @@ public class DatabaseTest {
 		
 		//System.out.println(db.getPlayer1Name());
 		
-		//String s = db.syncDB(1, 7, 19, 20, 25);
+		String s = db.syncDB(1, 7, 19, 20, 25);
 		
-		//System.out.println(s);
+		System.out.println(s);
 		
 		//db.deleteAll();
 		
+		//db.dropCollection();
+				
 		db.printDatabaseContents();
 		
 	}
