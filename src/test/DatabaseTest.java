@@ -8,12 +8,18 @@ public class DatabaseTest {
 		
 		MongoDB db = new MongoDB();
 		
-		//db.insert("Mike", "George", 5, 21, 10, 15);
+		//db.insert(1, "Mike", "George", 5, 21, 10, 15);
 		
 		//System.out.println(db.getPlayer1Name());
-		String s = db.syncDB(7, 19, 20, 25);
-		System.out.println(s);
+		
+		//String s = db.syncDB(1, 7, 19, 20, 25);
+		
+		//System.out.println(s);
+		
+		//db.deleteAll();
+		
 		db.printDatabaseContents();
+		
 	}
 
 }
