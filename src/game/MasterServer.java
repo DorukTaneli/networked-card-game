@@ -1,109 +1,85 @@
 package game;
-//echo server
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.NetworkInterface;
+import java.net.Inet4Address;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Enumeration;
+import java.util.ArrayList;
+
+import gameModel.Deck;
 
 
 public class MasterServer
 {
- public static final String DEFAULT_SERVER_ADDRESS = "localhost";
- public static final int DEFAULT_SERVER_PORT = 4444;
- private ServerSocket serverSocket;
- private BufferedReader is;
- private PrintWriter os;
- private Socket s;
+    private ServerSocket serverSocket;
+    public static final int DEFAULT_SERVER_PORT = 4446;
+    public int clientCounter = 0;
+    public Deck deck = new Deck();
+    /**
+     * Initiates a server socket on the input port, listens to the line, on receiving an incoming
+     * connection creates and starts a ServerThread on the client
+     * @param port
+     */
+    public MasterServer(int port, Deck deck)
+    {
+        try
+        {
+            serverSocket = new ServerSocket(port);
+            this.deck = deck;
+            System.out.println("Oppened up a server socket on " + Inet4Address.getLocalHost());
+            while (true)
+            {
+                ListenAndAccept();
+            }
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+            System.err.println("Server class.Constructor exception on oppening a server socket");
+        }
+       
+    }
 
- /**
-  * Initiates a server socket on the input port and keeps listening on the line
-  * @param port
-  */
- public MasterServer(int port)
- {
-     try
-     {
-         /*
-         Opens up a server socket on the specified port and listens
-          */
-         serverSocket = new ServerSocket(port);
-         System.out.println("Opened up a server socket on " + port);
-     }
-     catch (IOException e)
-     {
-         //e.printStackTrace();
-         System.err.println("Cannot open a server socket on port " + port);
-     }
-     while (true)
-     {
-         ListenAndAccept();
-     }
- }
+    /**
+     * Listens to the line and starts a connection on receiving a request from the client
+     * The connection is started and initiated as a ServerThread object
+     */
+    private void ListenAndAccept()
+    {
+        Socket s;
+        try
+        {
+            s = serverSocket.accept();
+            if(s.isConnected())
+            {
+            	clientCounter++;
+            	Deck halfDeck = new Deck();
+            	if(this.deck.deckSize() > 26){
+            		ArrayList<Integer> temp = new ArrayList<Integer>(deck.deck.subList(0, 25));
+            		ArrayList<Integer> temp2 = new ArrayList<Integer>(deck.deck.subList(26, 51));
+            		System.out.println(deck.deck.subList(0, 25).toString());
+            		halfDeck.deck = temp;
+            		deck.deck = temp2;
+            	}
+            	if(this.deck.deckSize() <= 26)
+            	{
+            		halfDeck.deck = deck.deck;
+            	}
+            	
+                System.out.println("A connection was established with a client on the address of " + s.getRemoteSocketAddress());
+                ServerThread st = new ServerThread(s, clientCounter, halfDeck);
+                st.start();
+            	
+            }
+            
+        }
 
- /**
-  *  Listens to the line and starts a connection on receiving a request with the client
-  */
- private void ListenAndAccept()
- {
-
-     try
-     {
-         /*
-         Casts a server socket to an ordinary socket
-          */
-         s = serverSocket.accept();
-         System.out.println("A connection was established with a client on the address of " + s.getRemoteSocketAddress());
-         is = new BufferedReader(new InputStreamReader(s.getInputStream()));
-         os = new PrintWriter(s.getOutputStream());
-
-         String line = is.readLine();
-         while (line.compareTo("QUIT") != 0)
-         {
-
-             os.println(line);
-             os.flush();
-             System.out.println("Client " + s.getRemoteSocketAddress() + " sent : " + line);
-             line = is.readLine();
-         }
-
-     }
-     catch (Exception e)
-     {
-         //e.printStackTrace();
-         System.err.println("Exception on listen and accept function on reading the line");
-     } finally
-     {
-         try
-         {
-             System.out.println("Closing the connection");
-             if (is != null)
-             {
-                 is.close();
-                 System.out.println(" Socket Input Stream Closed");
-             }
-
-             if (os != null)
-             {
-                 os.close();
-                 System.out.println("Socket Out Closed");
-             }
-             if (s != null)
-             {
-                 s.close();
-                 System.out.println("Socket Closed");
-             }
-
-         }
-         catch (IOException ie)
-         {
-             System.out.println("Socket Close Error");
-         }
-     }//end finally
- }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            System.err.println("Server Class.Connection establishment error inside listen and accept function");
+        }
+    }
 
 }
+

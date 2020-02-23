@@ -7,21 +7,22 @@ import gameModel.Deck;
 public class PlayGame {
 
 	public static void main(String[] args) {
-		Deck deck = new Deck();
-		deck.shuffle();
+		 Scanner scanner = new Scanner(System.in);
+	     System.out.println("Select game mode:\n Type 1 for master, 2 for servant");
+	     String message = scanner.nextLine();
+	     if(message.equals("1")){
+	    	 Deck mainDeck = new Deck();
+	    	 mainDeck.shuffle();
+	    	 MasterServer server = new MasterServer(MasterServer.DEFAULT_SERVER_PORT, mainDeck);
 
-		//Client connection
-		ConnectionToServer connectionToServer = new ConnectionToServer(ConnectionToServer.DEFAULT_SERVER_ADDRESS, ConnectionToServer.DEFAULT_SERVER_PORT);
-        connectionToServer.Connect();
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Enter a message for the echo");
-        String message = scanner.nextLine();
-        while (!message.equals("QUIT"))
-        {
-            System.out.println("Response from server: " + connectionToServer.SendForAnswer(message));
-            message = scanner.nextLine();
-        }
-        connectionToServer.Disconnect();
+	     }
+	     else if(message.equals("2"))
+	     {
+	    	 //TODO servant side implementation
+	     }
+	     else
+	    	 System.out.println("Invalid request");
+
     }
 
 	
