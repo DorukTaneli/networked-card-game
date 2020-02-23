@@ -6,12 +6,19 @@ public class Deck {
 
 	public static ArrayList<Integer> deck = new ArrayList<Integer>();
 	
+	/**
+	 * Creates the Deck object by filling out the ArrayList deck field of the instance with numbers from
+	 * 1 to 52, indicating a whole card deck.
+	 */
 	public Deck() {
 		for(int i = 1; i < 53; i++){
 			deck.add(i);
 		}
 	}
 	
+	/**
+	 * Shuffles the contents in the ArrayList deck 
+	 */
 	public static void shuffle(){
 		Collections.shuffle(deck);	
 	}
@@ -34,8 +41,8 @@ public class Deck {
 	*/
 	
 	/**
-	 * Returns the top card from the deck
-	 * @return
+	 *
+	 * @return  Returns the top card from the deck
 	 */
 	
 	public static int drawCard()
@@ -51,6 +58,11 @@ public class Deck {
 		
 		
 	}
+	
+	/**
+	 * 
+	 * @return returns the size of the deck indicated by the elements in the ArrayList deck
+	 */
 	
 	public static int deckSize()
 	{
