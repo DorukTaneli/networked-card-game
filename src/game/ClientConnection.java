@@ -9,12 +9,13 @@ public class ClientConnection {
         ConnectionToServer connectionToServer = new ConnectionToServer(ConnectionToServer.DEFAULT_SERVER_ADDRESS, ConnectionToServer.DEFAULT_SERVER_PORT);
         connectionToServer.Connect();
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Enter a message for the echo");
-        String message = scanner.nextLine();
-        while (!message.equals("QUIT"))
+        System.out.println("Do you want a new game? (Press 0 to start a game)");
+        int message = Integer.parseInt(scanner.nextLine());
+        while (message != 9)
         {
+        	
             System.out.println("Response from server: " + connectionToServer.SendForAnswer(message));
-            message = scanner.nextLine();
+            message = Integer.parseInt(scanner.nextLine());
         }
         connectionToServer.Disconnect();
         scanner.close();

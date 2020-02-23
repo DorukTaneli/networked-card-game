@@ -4,7 +4,7 @@ import java.util.*;
 
 public class Deck {
 
-	private static ArrayList<Integer> deck = new ArrayList<Integer>();
+	public static ArrayList<Integer> deck = new ArrayList<Integer>();
 	
 	public Deck() {
 		for(int i = 1; i < 53; i++){
@@ -15,6 +15,28 @@ public class Deck {
 	public static void shuffle(){
 		Collections.shuffle(deck);	
 	}
+	
+	
+	/**
+	 * Divides the deck into two equal sized sub decks
+	 * @param main the deck to be divided
+	 * @param d1 first sub deck
+	 * @param d2 second sub deck
+	 */
+	/*
+	public static void divideDeck(Deck main, Deck d1, Deck d2){
+		ArrayList<Integer> temp = new ArrayList<Integer>();
+		temp.addAll(26, main.deck);
+		d2.deck = temp;
+		d2.deck = (ArrayList<Integer>) main.deck.subList(0, 26);
+				
+	}
+	*/
+	
+	/**
+	 * Returns the top card from the deck
+	 * @return
+	 */
 	
 	public static int drawCard()
 	{

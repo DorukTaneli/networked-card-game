@@ -11,7 +11,9 @@ public class PlayGame {
 	     System.out.println("Select game mode:\n Type 1 for master, 2 for servant");
 	     String message = scanner.nextLine();
 	     if(message.equals("1")){
-	    	 MasterServer server = new MasterServer(MasterServer.DEFAULT_SERVER_PORT);
+	    	 Deck mainDeck = new Deck();
+	    	 mainDeck.shuffle();
+	    	 MasterServer server = new MasterServer(MasterServer.DEFAULT_SERVER_PORT, mainDeck);
 
 	     }
 	     else if(message.equals("2"))
@@ -20,10 +22,7 @@ public class PlayGame {
 	     }
 	     else
 	    	 System.out.println("Invalid request");
-		/*
-		Deck deck = new Deck();
-		deck.shuffle();
-		 */
+
     }
 
 	

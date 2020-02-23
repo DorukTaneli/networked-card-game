@@ -1,25 +1,36 @@
 package game;
 import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
+
+import gameModel.Deck;
 
 class ServerThread extends Thread
 {
     protected BufferedReader is;
-    protected PrintWriter os;
+    protected ObjectInputStream dataIn;
+    protected ObjectOutputStream dataOut;
     protected Socket s;
     private String line = new String();
+    private int clientCount;
+    private Deck halfDeck = new Deck();
 
     /**
      * Creates a server thread on the input socket
      *
      * @param s input socket to create a thread on
      */
-    public ServerThread(Socket s)
+    public ServerThread(Socket s, int clientCounter, Deck deck)
     {
         this.s = s;
+        this.clientCount = clientCounter;
+        halfDeck = deck;
     }
 
     /**
@@ -29,8 +40,8 @@ class ServerThread extends Thread
     {
         try
         {
-            is = new BufferedReader(new InputStreamReader(s.getInputStream()));
-            os = new PrintWriter(s.getOutputStream());
+            dataIn = new ObjectInputStream(s.getInputStream());
+            dataOut = new ObjectOutputStream(s.getOutputStream());
 
         }
         catch (IOException e)
@@ -44,9 +55,14 @@ class ServerThread extends Thread
             while (line.compareTo("QUIT") != 0)
             {
 
-                os.println(line);
-                os.flush();
-                System.out.println("Client " + s.getRemoteSocketAddress() + " sent : " + line);
+                
+                if( line.compareTo("0") == 0)
+                {
+                	
+                	dataOut.writeObject(halfDeck.deck);
+                	dataOut.flush();
+                }
+                System.out.println("Client " + s.getRemoteSocketAddress() + " got their deck");
                 line = is.readLine();
             }
         }
@@ -64,15 +80,15 @@ class ServerThread extends Thread
             try
             {
                 System.out.println("Closing the connection");
-                if (is != null)
+                if (dataIn != null)
                 {
-                    is.close();
+                    dataIn.close();
                     System.err.println(" Socket Input Stream Closed");
                 }
 
-                if (os != null)
+                if (dataOut != null)
                 {
-                    os.close();
+                	dataOut.close();
                     System.err.println("Socket Out Closed");
                 }
                 if (s != null)
