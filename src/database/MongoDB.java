@@ -22,6 +22,11 @@ public class MongoDB {
 	MongoDatabase database;
 	MongoCollection<Document> collection;
 	
+    /**
+     * Creates a MongoClient in localhost with port number 27017.
+     * Sets credentials to 'myDb' database as username: 'sampleuser' and password: 'password'
+     * Creates 'myDb' database and creates 'myCollection' collection inside it.
+     */
 	public MongoDB() {
 		super();
 	      // Creating a Mongo client 
@@ -38,14 +43,9 @@ public class MongoDB {
 	      collection = database.getCollection("myCollection"); 
 	 
 	}
-	
-	//call this only the first time you use the database
-	public void initiateDatabase() {
-		createCollection();
-	}
-	
-	public void createCollection() {
-	      database.createCollection("Collection1");
+		
+	public void dropCollection() {
+		collection.drop();
 	}
 	
 	//call this at the start of every game
