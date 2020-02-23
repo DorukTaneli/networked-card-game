@@ -16,9 +16,9 @@ public class ConnectionToServer
     public static final String DEFAULT_SERVER_ADDRESS = "localhost";
     public static final int DEFAULT_SERVER_PORT = 4446;
     private Socket s;
-    //private BufferedReader br;
-    protected ObjectInputStream dataIn;
-    protected ObjectOutputStream dataOut;
+    private BufferedReader br;
+    protected BufferedReader dataIn;
+    protected PrintWriter dataOut;
 
     protected String serverAddress;
     protected int serverPort;
@@ -46,8 +46,8 @@ public class ConnectionToServer
             /*
             Read and write buffers on the socket
              */
-            dataIn = new ObjectInputStream(s.getInputStream());
-            dataOut = new ObjectOutputStream(s.getOutputStream());
+            dataIn = new BufferedReader(new InputStreamReader(s.getInputStream()));
+            dataOut = new PrintWriter(s.getOutputStream());
 
             System.out.println("Successfully connected to " + serverAddress + " on port " + serverPort);
         }
@@ -63,32 +63,35 @@ public class ConnectionToServer
      * @param message input message string to the server
      * @return the received server answer
      */
-    public int[] SendForAnswer(int message)
+    public String SendForAnswer(int message)
     {
-        int[] messageRecieved = new int[26];
+        String messageRecieved = "";
         try
         {
         	/*
             Sends the message to the server via PrintWriter
              */
-            dataOut.writeObject(message);
+            dataOut.write(message);
             dataOut.flush();
         	/*
             Reads a line from the server via Buffer Reader
              */
-            messageRecieved = (int[]) dataIn.readObject();
-            if(messageRecieved.length > 1)
+            messageRecieved = dataIn.readLine();
+            if(messageRecieved.length() > 1)
             {
             	ArrayList<Integer> cardList = new ArrayList<Integer>();
-            	for(int i=0; i<26; i++)
-            	{
-            		cardList.add(messageRecieved[i]);
+            	String[] parser = messageRecieved.split(",");
+            	for(int i = 0; i<parser.length; i++){
+
+                	cardList.add(Integer.parseInt(parser[i]));
             	}
+            	
             	myDeck.deck = cardList;
+            	System.out.println("Cards recieved");
             }
             if(message == 2)
             {
-            	dataOut.writeObject(myDeck.drawCard());
+            	dataOut.write(Integer.toString(myDeck.drawCard()));
             	dataOut.flush();
             	
             }
@@ -99,10 +102,7 @@ public class ConnectionToServer
         {
             e.printStackTrace();
             System.out.println("ConnectionToServer. SendForAnswer. Socket read Error");
-        } catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+        } 
         return messageRecieved;
     }
 

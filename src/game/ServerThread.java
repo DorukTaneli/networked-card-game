@@ -14,8 +14,8 @@ import gameModel.Deck;
 class ServerThread extends Thread
 {
     protected BufferedReader is;
-    protected ObjectInputStream dataIn;
-    protected ObjectOutputStream dataOut;
+    protected BufferedReader dataIn;
+    protected PrintWriter dataOut;
     protected Socket s;
     private String line = new String();
     private int clientCount;
@@ -40,8 +40,8 @@ class ServerThread extends Thread
     {
         try
         {
-            dataIn = new ObjectInputStream(s.getInputStream());
-            dataOut = new ObjectOutputStream(s.getOutputStream());
+        	dataIn = new BufferedReader(new InputStreamReader(s.getInputStream()));
+            dataOut = new PrintWriter(s.getOutputStream());
 
         }
         catch (IOException e)
@@ -58,8 +58,13 @@ class ServerThread extends Thread
                 
                 if( line.compareTo("0") == 0)
                 {
-                	
-                	dataOut.writeObject(halfDeck.deck);
+                	String deck = String.format("%s,", halfDeck.deck.get(0));
+                	System.out.println(halfDeck.deck.toString());
+                	for(int i = 0; i<halfDeck.deckSize(); i++)
+                	{
+                		deck += String.format(",%s", halfDeck.deck.get(i));
+                	}
+                	dataOut.write(deck);;
                 	dataOut.flush();
                 }
                 System.out.println("Client " + s.getRemoteSocketAddress() + " got their deck");
