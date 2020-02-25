@@ -13,6 +13,7 @@ public class PlayGame {
 	     if(message.equals("1")){
 	    	 Deck mainDeck = new Deck();
 	    	 mainDeck.shuffle();
+	    	 //System.out.println(mainDeck.deck.toString());
 	    	 MasterServer server = new MasterServer(MasterServer.DEFAULT_SERVER_PORT, mainDeck);
 
 	     }

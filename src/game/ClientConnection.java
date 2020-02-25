@@ -6,9 +6,11 @@ public class ClientConnection {
 
     public static void main(String args[])
     {
-        ConnectionToServer connectionToServer = new ConnectionToServer(ConnectionToServer.DEFAULT_SERVER_ADDRESS, ConnectionToServer.DEFAULT_SERVER_PORT);
+    	Scanner scanner = new Scanner(System.in);
+    	System.out.println("Please enter your name: ");
+    	String name = scanner.nextLine();
+        ConnectionToServer connectionToServer = new ConnectionToServer(ConnectionToServer.DEFAULT_SERVER_ADDRESS, ConnectionToServer.DEFAULT_SERVER_PORT, name);
         connectionToServer.Connect();
-        Scanner scanner = new Scanner(System.in);
         System.out.println("Do you want a new game? (Press 0 to start a game)");
         int message = Integer.parseInt(scanner.nextLine());
         while (message != 9)

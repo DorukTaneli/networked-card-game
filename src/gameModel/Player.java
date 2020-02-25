@@ -2,7 +2,7 @@ package gameModel;
 
 public class Player {
 	
-	public static Deck deck;
+	public Deck deck;
 	private String name;
 	private int score;
 	public String serverAddress;
@@ -16,9 +16,7 @@ public class Player {
 	 * @param serverPort for the socket connection
 	 * @param name the ID of the player object
 	 */
-	public Player(String serverAddress, int serverPort, String name){
-		this.serverAddress = serverAddress;
-		this.serverPort = serverPort;
+	public Player(String name){
 		this.name = name;
 		this.score = 0;
 	}
@@ -27,7 +25,7 @@ public class Player {
 	 * Assigns the deck field of the player object as the given Deck object
 	 * @param d a Deck instance 
 	 */
-	public static void giveDeck(Deck d){
+	public void giveDeck(Deck d){
 		deck = d;
 	}
 	

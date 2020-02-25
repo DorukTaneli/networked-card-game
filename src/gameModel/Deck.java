@@ -4,7 +4,7 @@ import java.util.*;
 
 public class Deck {
 
-	public static ArrayList<Integer> deck = new ArrayList<Integer>();
+	public ArrayList<Integer> deck = new ArrayList<Integer>();
 	
 	/**
 	 * Creates the Deck object by filling out the ArrayList deck field of the instance with numbers from
@@ -17,10 +17,18 @@ public class Deck {
 	}
 	
 	/**
+	 * Creates an empty deck capable of holding the specified number of cards
+	 * @param i is the size of the deck
+	 */
+	public Deck(int i){
+		deck = new ArrayList<Integer>(i);
+	}
+	
+	/**
 	 * Shuffles the contents in the ArrayList deck 
 	 */
-	public static void shuffle(){
-		Collections.shuffle(deck);	
+	public void shuffle(){
+		Collections.shuffle(this.deck);
 	}
 	
 	
@@ -45,7 +53,7 @@ public class Deck {
 	 * @return  Returns the top card from the deck
 	 */
 	
-	public static int drawCard()
+	public int drawCard()
 	{
 		if(!deck.isEmpty()){
 			int cardDrawn = deck.get(deckSize()-1);
@@ -58,13 +66,39 @@ public class Deck {
 		
 		
 	}
+	/**
+	 * Copies the contents of deck b into deck a
+	 * @param a the destination deck	
+	 * @param b the source deck
+	 */
+	public static void copyDeck(Deck a, List<Integer> b)
+	{
+		if(a.deckSize() == 0)
+		{
+			for(int i = 0; i < b.size(); i++)
+			{
+				a.deck.add(b.get(i));
+			}
+		}
+		else if(a.deckSize() != b.size())
+		{
+			System.out.println("Decks are not the same size");
+		}
+		else{
+			for(int i = 0; i < a.deckSize(); i++)
+			{
+				a.deck.set(i, b.get(i));
+			}
+		}
+		
+	}
 	
 	/**
 	 * 
 	 * @return returns the size of the deck indicated by the elements in the ArrayList deck
 	 */
 	
-	public static int deckSize()
+	public int deckSize()
 	{
 		return deck.size();
 	}

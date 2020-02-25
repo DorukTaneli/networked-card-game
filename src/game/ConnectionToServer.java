@@ -23,15 +23,17 @@ public class ConnectionToServer
     protected String serverAddress;
     protected int serverPort;
     protected Deck myDeck = new Deck();
+    public String playerName;
     /**
      *
      * @param address IP address of the server, if you are running the server on the same computer as client, put the address as "localhost"
      * @param port port number of the server
      */
-    public ConnectionToServer(String address, int port)
+    public ConnectionToServer(String address, int port, String name)
     {
         serverAddress = address;
         serverPort    = port;
+        playerName = name;
     }
 
     /**
@@ -68,28 +70,41 @@ public class ConnectionToServer
         String messageRecieved = "";
         try
         {
-        	/*
-            Sends the message to the server via PrintWriter
-             */
-            dataOut.println(message);
-            dataOut.flush();
-        	/*
+        	
+            if(message == 0)
+            {
+            	String msgToSend = String.format("%d", message) + ',' + this.playerName;
+            	/*
+                Sends the message to the server via PrintWriter
+                 */
+                dataOut.println(msgToSend);
+                dataOut.flush();
+            	
+            }
+            
+            else{
+                dataOut.println(message);
+                dataOut.flush();
+            	
+            }
+            /*
             Reads a line from the server via Buffer Reader
              */
             messageRecieved = dataIn.readLine();
+            
+            
             if(messageRecieved.length() > 1)
             {
             	ArrayList<Integer> cardList = new ArrayList<Integer>();
             	String[] parser = messageRecieved.split(",");
             	for(int i = 0; i<parser.length; i++){
-
                 	cardList.add(Integer.parseInt(parser[i]));
             	}
             	
             	myDeck.deck = cardList;
             	System.out.println("Cards recieved");
             }
-            if(message == 2)
+            else if(message == 2)
             {
             	int card = myDeck.drawCard();
             	dataOut.println(Integer.toString(card));

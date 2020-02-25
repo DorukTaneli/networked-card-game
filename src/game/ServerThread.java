@@ -8,8 +8,12 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.LinkedList;
+import java.util.List;
 
+import database.MongoDB;
 import gameModel.Deck;
+import gameModel.Player;
 
 class ServerThread extends Thread
 {
@@ -19,8 +23,11 @@ class ServerThread extends Thread
     protected Socket s;
     private String line = new String();
     private int clientCount;
-    private Deck halfDeck = new Deck();
-    
+    private int turnCount = 0;
+    private Deck halfDeck = new Deck(26);
+    public Player player;
+    private static List<Player> playerList = new LinkedList<Player>();
+    private static MongoDB db = new MongoDB();
 
     /**
      * Creates a server thread on the input socket
@@ -31,7 +38,7 @@ class ServerThread extends Thread
     {
         this.s = s;
         this.clientCount = clientCounter;
-        halfDeck = deck;
+        Deck.copyDeck(halfDeck, deck.deck);
     }
 
     /**
@@ -52,28 +59,44 @@ class ServerThread extends Thread
 
         try
         {
-            line = is.readLine();
+            line = dataIn.readLine();
             while (line.compareTo("QUIT") != 0)
             {
 
                 
-                if( line.compareTo("0") == 0)
+                if( line.charAt(0) == '0')
                 {
-                	String deck = String.format("%s,", halfDeck.deck.get(0));
+                	String[] parser = line.split(",");
+                	String name = parser[1];
+                	player = new Player(name);
+                	String deck = Integer.toString((halfDeck.deck.get(0)));
                 	System.out.println(halfDeck.deck.toString());
+                	System.out.println(deck);
                 	for(int i = 0; i<halfDeck.deckSize(); i++)
                 	{
-                		deck += String.format(",%s", halfDeck.deck.get(i));
+                		deck += ',' + halfDeck.deck.get(i);
                 	}
+                	System.out.println(deck);
                 	dataOut.println(deck);;
                 	dataOut.flush();
-                	System.out.println("Client " + s.getRemoteSocketAddress() + " got their deck");
+                	player.giveDeck(halfDeck);
+                	this.playerList.add(player);
+                	System.out.println("Client " + player.getName() + " got their deck");
                 }
                 else{
                 	int card = Integer.parseInt(line);
                 }
+                
+                if(clientCount == 2){
+                	System.out.println("Game starting");
+                	while(turnCount < 26){
+                		db.insert(s.getLocalPort(),playerList.get(clientCount).getName(),playerList.get(clientCount+1).getName(),
+                			turnCount, turnCount, playerList.get(clientCount).getScore(), playerList.get(clientCount+1).getScore());
+                	turnCount++;
+                	}
+                }
                
-                line = is.readLine();
+                line = dataIn.readLine();
             }
         }
         catch (IOException e)
